@@ -27,7 +27,9 @@ IF(wxWidgets_FOUND)
         SynthManager.h
         SynthManager.cpp
         PlateReverb.h
-        PlateReverb.cpp)
+        PlateReverb.cpp
+        FdnReverb.h
+        FdnReverb.cpp)
 
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
     target_link_libraries(${PROJECT_NAME} PortAudio)

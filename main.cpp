@@ -20,7 +20,7 @@ private:
     void StartStopAudio(wxCommandEvent &event);
     bool running = false;
     wxStaticText *label10 = new wxStaticText(this, 20010, "50");
-    wxSlider* sliders[8]={
+    wxSlider* sliders[10]={
         new wxSlider(this,10001,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10002,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10003,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
@@ -28,7 +28,9 @@ private:
         new wxSlider(this,10005,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10006,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10007,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
+        new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10009,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10010,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
     };
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
     wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
@@ -40,15 +42,15 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     manager.Init();
 
     // Wxwidgets related stuff
-    wxGridSizer *grid = new wxGridSizer(3, 8, 0, 0);
+    wxGridSizer *grid = new wxGridSizer(3, 10, 0, 0);
     // bind sliders to function
-    for(int x=0; x <8; x++)
+    for(int x=0; x <10; x++)
     {
         sliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlChanged, this);
     }
     
     // add sliders to grid
-    for(int x=0; x <8; x++)
+    for(int x=0; x < 10; x++)
     {
         grid->Add(sliders[x],1, wxEXPAND | wxALL);
     }
@@ -56,14 +58,16 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     //bind buttons
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
 
-    grid->Add(new wxStaticText(this, 20001, ""));
-    grid->Add(new wxStaticText(this, 20002, "time"));
+    grid->Add(new wxStaticText(this, 20001, "size"));
+    grid->Add(new wxStaticText(this, 20002, "decay"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
     grid->Add(new wxStaticText(this, 20004, "diffsn"));
-    grid->Add(new wxStaticText(this, 20005, "LFO1 f"));
-    grid->Add(new wxStaticText(this, 20006, "LFO2 f"));
-    grid->Add(new wxStaticText(this, 20007, "depth"));
-    grid->Add(new wxStaticText(this, 20008, ""));
+    grid->Add(new wxStaticText(this, 20005, "LFO F"));
+    grid->Add(new wxStaticText(this, 20006, "LFO D"));
+    grid->Add(new wxStaticText(this, 20007, "grain R"));
+    grid->Add(new wxStaticText(this, 20009, "grain D"));
+    grid->Add(new wxStaticText(this, 20010, "tilt"));
+    grid->Add(new wxStaticText(this, 20011, "mix"));
 
     grid->Add(new wxStaticText(this, 20008, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
@@ -96,53 +100,91 @@ void MyFrame::StartStopAudio(wxCommandEvent &event)
 }
 void MyFrame::OnSlChanged(wxCommandEvent &event)
 {
-    int slider = event.GetId() - 10001;
+    int slider = event.GetId() - 10000;
     int value = sliders[slider]->GetValue();
     switch (slider)
     {
-        case 1:
+        case 1: // size
         {
             if(value==100)value=99;
-            float timev = value/100.0;
-            manager.SetTime(timev);
-            label10->SetLabel(std::to_string(timev));
+            float timev = value/50.0;
+            manager.SetSize(timev);
+            //label10->SetLabel(std::to_string(timev));
+            label10->SetLabel("size");
         }
             break;
-        case 2:
+        case 2: // decay
+        {
+            float dampv = value/100.0;
+            manager.SetDecay(dampv);
+            //label10->SetLabel(std::to_string(dampv));
+            label10->SetLabel("decay");
+        }
+            break;
+        case 3: // damp
         {
             float dampv = value/100.0;
             manager.SetDamp(dampv);
-            label10->SetLabel(std::to_string(dampv));
+            //label10->SetLabel(std::to_string(dampv));
+            label10->SetLabel("damp");
         }
             break;
-        case 3:
+        case 4: // diffusion
         {
-            float diffusionv = value/100.0;
-            manager.SetDiffusion(diffusionv);
-            label10->SetLabel(std::to_string(diffusionv));
+            float diffv = value/120.0;
+            manager.SetDiffusion(diffv);
+            //label10->SetLabel(std::to_string(diffv));
+            label10->SetLabel("diffusion");
         }
             break;
-        case 4:
+        case 5: // lfo rate
         {
-            float lfo1freq = value;
-            manager.SetLFO1(lfo1freq);
-            label10->SetLabel(std::to_string(lfo1freq));
+            float lfofreq = value;
+            manager.SetLFO1(lfofreq);
+            //label10->SetLabel(std::to_string(lfofreq));
+            label10->SetLabel("lforate");
         }
             break;
-        case 5:
-        {
-            float lfo2freq = value;
-            manager.setLFO2(lfo2freq);
-            label10->SetLabel(std::to_string(lfo2freq));
-        }
-            break;
-        case 6:
+        case 6: // lfo depth
         {
             float modAmp = value/4.0;
             manager.setMod(modAmp);
-            label10->SetLabel(std::to_string(modAmp));
+            //label10->SetLabel(std::to_string(modAmp));
+            label10->SetLabel("lfodepth");
         }
-        
+            break;
+        case 7: // grain rate
+        {
+            float grainDepth = value * 200;
+            manager.setLFO2(grainDepth);
+            //label10->SetLabel(std::to_string(grainDepth));
+            label10->SetLabel("grainrate");
+        }
+            break;
+        case 8: // grain depth
+        {
+            float grainDepth = value/4.0;
+            manager.setGrainDepth(grainDepth);
+            //label10->SetLabel(std::to_string(grainDepth));
+            label10->SetLabel("graindep");
+        }
+            break;
+        case 9: // tilt
+        {
+            float tiltV = (value/50.0)-1.0;
+            manager.setTilt(tiltV);
+            //label10->SetLabel(std::to_string(tiltV));
+            label10->SetLabel("tilt");
+        }
+            break;
+        case 10: // mix
+        {
+            float mix = value/100.0;
+            manager.setMix(mix);
+            //label10->SetLabel(std::to_string(mix));
+            label10->SetLabel("mix");
+        }
+
         default:
             break;
     }
