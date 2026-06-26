@@ -1,15 +1,8 @@
-# Audio reverb 
-![Alt text](reverb.PNG?raw=true "Work of progress")<br>
-### based on experiments with the "software synth test bed" repository
-In this repository you will find a stand alone audio reverb based on the well-known Dattorro reverb.<br>
-[Read more about the reverb here!](https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf)<br>
-A compiled program is available in the root "reverb.exe". Try it out.<br>
-The reverb contains two all pass filter / delays that are modulated by two lfo:s. You can easily make it unstable by setting the modulation depth to max value so be careful...<br>
-In the future i will try to make the code more efficient. My plan is to port the code to an ARM mcu and create an actual eurorack synth module of it, with CV inputs and so on...
-<br>
-I am using the [PortAudio sound API](https://www.portaudio.com/), made by Ross Bencina.<br>
-The GUI is based on WXWidgets<br>
-To build this program you need to install wxwidgets on your system. I have done it on a Windows machine with mingw compiler. Read more about it down here. Unfortunately, it's not as simple process.<br>
+# Granular reverb<br>
+This granular reverb is based on my [audio reverb](https://github.com/nilsjc/AudioReverb)<br>
+It will be much more experimental. Right now it isn´t working.
+Work in progress...
+
 
 ## Some build instructions
 ### How to build this project with mingw32 and cmake on Windows.<br>
