@@ -26,10 +26,10 @@ IF(wxWidgets_FOUND)
         AudioStream.cpp
         SynthManager.h
         SynthManager.cpp
-        PlateReverb.h
-        PlateReverb.cpp
         FdnReverb.h
-        FdnReverb.cpp)
+        FdnReverb.cpp
+        AudioRecord.h
+        AudioRecord.cpp)
 
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
     target_link_libraries(${PROJECT_NAME} PortAudio)

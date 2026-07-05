@@ -1,7 +1,7 @@
 #ifndef SYNTHMANAGER_H
 #define SYNTHMANAGER_H
-#include "PlateReverb.h"
 #include "FdnReverb.h"
+#include "AudioRecord.h"
 namespace SynthManager
 {
     class Manager
@@ -24,10 +24,15 @@ namespace SynthManager
             void setTilt(float t);
             void setMix(float m);
             void Init();
+            void SetSamplePitchChange(double speed);
+            void RecordInputSample(int targetSize);
+            void PlaySample();
+            void StopSample();
 
         private:
             // PlateR::Reverb reverb;
             FDNReverb::FdnReverb reverb;
+            AudioInput::TapeRecorder recorder;
 
     };
 }

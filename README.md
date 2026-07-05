@@ -1,6 +1,9 @@
 # Granular reverb<br>
+![Alt text](reverb2.PNG?raw=true "Work of progress")<br>
 This granular reverb is based on my [audio reverb](https://github.com/nilsjc/AudioReverb)<br>
-It will be much more experimental. Right now it isn´t working.
+It is much more experimental. The GUI is horrible but that's OK because it does its job. My plan is anyway just to experiment with sound processing.<br>
+To try this out, connect live sound into your computer mic input connector and hit the loop record button. Adjust the bottom slider to right for setting the loop time in seconds. No visual will tell you when the record is in progress and done, but it will record sound. After that press play loop, and adjust the pitch slider, the bottom slider to left.<br>
+The reverb have a lot of parameters and it can be a interesting chorus as well. But at the moment i dont like the sound - i think it lacks the warmth of Dattorro's reverb. I will try to improve it in the future.<br>
 Work in progress...
 
 

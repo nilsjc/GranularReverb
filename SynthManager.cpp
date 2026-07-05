@@ -12,7 +12,9 @@ float SynthManager::Manager::OutRight()
 
 void SynthManager::Manager::Input(float *in)
 {
-    reverb.process(in[0]);
+    recorder.Input(in[0]);
+    //reverb.process(in[0]);
+    reverb.process(recorder.MonoOut());
 }
 
 void SynthManager::Manager::Tick()
@@ -86,4 +88,24 @@ void SynthManager::Manager::setMix(float m)
 void SynthManager::Manager::Init()
 {
     reverb.init(44100.0f);
+}
+
+void SynthManager::Manager::SetSamplePitchChange(double speed)
+{
+    recorder.PitchChange(speed);
+}
+
+void SynthManager::Manager::RecordInputSample(int targetSize)
+{
+    recorder.Rec(targetSize);
+}
+
+void SynthManager::Manager::PlaySample()
+{
+    recorder.Play();
+}
+
+void SynthManager::Manager::StopSample()
+{
+    recorder.Stop();
 }
