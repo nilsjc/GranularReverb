@@ -25,24 +25,11 @@ private:
     bool running = false;
     bool playSample = false;
     wxStaticText *label10 = new wxStaticText(this, 20010, "50");
-    wxSlider* sliders[13]={
-        new wxSlider(this,10001,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10002,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10003,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10004,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10005,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10006,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10007,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10009,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10010,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10011,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10012,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
-
-    };
+    wxSlider* sliders[12];
+    wxStaticText* labels[12];
+    const std::string sliderLabels[12] = {"size", "decay", "damp", "diffsn", "LFO F", "LFO D", "grain R", "grain D", "tilt", "mix", "loop pitch", "loop length"};
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
-    wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
-    wxButton* recButton = new wxButton(this, 30003, "loop record");
+    wxButton* recButton = new wxButton(this, 30003, "record loop");
     wxButton* playButton = new wxButton(this, 30004, "play loop");
     void WriteToLabel(std::string text)
     {
@@ -52,50 +39,68 @@ private:
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
-    // Related to precalculations in audio engine
-    manager.Init();
-
-    // Wxwidgets related stuff
-    wxGridSizer *grid = new wxGridSizer(3, 10, 0, 0);
-    // bind sliders to function
-    for(int x=0; x <12; x++)
-    {
+    for(int x=0; x < 12; x++){
+        sliders[x] = new wxSlider(this,10001 + x,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator);
         sliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlChanged, this);
+        labels[x] = new wxStaticText(this, 20001 + x, sliderLabels[x]);
     }
-    
-    // add reverb sliders to grid
-    for(int x=0; x < 10; x++)
-    {
-        grid->Add(sliders[x],1, wxEXPAND | wxALL);
-    }
-
     //bind buttons
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
     recButton->Bind(wxEVT_BUTTON, &MyFrame::RecordAudioSample, this);
     playButton->Bind(wxEVT_BUTTON, &MyFrame::PlayStopSampleLoop, this);
-    grid->Add(new wxStaticText(this, 20001, "size"));
-    grid->Add(new wxStaticText(this, 20002, "decay"));
-    grid->Add(new wxStaticText(this, 20003, "damp"));
-    grid->Add(new wxStaticText(this, 20004, "diffsn"));
-    grid->Add(new wxStaticText(this, 20005, "LFO F"));
-    grid->Add(new wxStaticText(this, 20006, "LFO D"));
-    grid->Add(new wxStaticText(this, 20007, "grain R"));
-    grid->Add(new wxStaticText(this, 20009, "grain D"));
-    grid->Add(new wxStaticText(this, 20010, "tilt"));
-    grid->Add(new wxStaticText(this, 20011, "mix"));
 
-    grid->Add(new wxStaticText(this, 20008, "Value:"));
-    grid->Add(label10, 1, wxEXPAND | wxALL);
-    grid->Add(startStopButton);
-    grid->Add(recButton);
-    grid->Add(playButton);
-    grid->Add(sliders[10],1, wxEXPAND | wxALL);
-    grid->Add(new wxStaticText(this, 20012, "speed"));
-    grid->Add(sliders[11],1, wxEXPAND | wxALL);
-    grid->Add(new wxStaticText(this, 20013, "loop size"));
+    // Related to precalculations in audio engine
+    manager.Init();
 
-    this->SetSizer(grid);
-    grid->Layout();
+    // Wxwidgets related stuff
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    // Rad 1
+    wxBoxSizer* row1 = new wxBoxSizer(wxHORIZONTAL);
+    for (int i = 0; i < 10; ++i)
+    {
+        wxBoxSizer* col = new wxBoxSizer(wxVERTICAL);
+        col->Add(sliders[i], 1, wxALIGN_CENTER | wxALL, 5);
+        col->Add(labels[i], 0, wxALIGN_CENTER | wxBOTTOM, 10);
+        row1->Add(col, 0, wxALIGN_CENTER | wxALL, 10);
+    }
+    mainSizer->Add(row1, 0, wxALIGN_CENTER);
+
+
+
+
+    // Rad 2 (sliders 4–7)
+    wxBoxSizer* row2 = new wxBoxSizer(wxHORIZONTAL);
+    
+    wxBoxSizer* col1 = new wxBoxSizer(wxVERTICAL);
+    col1->Add(startStopButton, 1, wxALIGN_CENTER | wxALL, 5);
+    row2->Add(col1, 0, wxALIGN_CENTER | wxALL, 10);
+
+    wxBoxSizer* col2 = new wxBoxSizer(wxVERTICAL);
+    col2->Add(recButton, 1, wxALIGN_CENTER | wxALL, 5);
+    row2->Add(col2, 0, wxALIGN_CENTER | wxALL, 10);
+
+    wxBoxSizer* col3 = new wxBoxSizer(wxVERTICAL);
+    col3->Add(playButton, 1, wxALIGN_CENTER | wxALL, 5);
+    row2->Add(col3, 0, wxALIGN_CENTER | wxALL, 10);
+
+    wxBoxSizer* col4 = new wxBoxSizer(wxVERTICAL);
+    col4->Add(sliders[10], 1, wxALIGN_CENTER | wxALL, 5);
+    col4->Add(labels[10], 0, wxALIGN_CENTER | wxBOTTOM, 10);
+    row2->Add(col4, 0, wxALIGN_CENTER | wxALL, 10);
+
+    wxBoxSizer* col5 = new wxBoxSizer(wxVERTICAL);
+    col5->Add(sliders[11], 1, wxALIGN_CENTER | wxALL, 5);
+    col5->Add(labels[11], 0, wxALIGN_CENTER | wxBOTTOM, 10);
+    row2->Add(col5, 0, wxALIGN_CENTER | wxALL, 10);
+
+    wxBoxSizer* col6 = new wxBoxSizer(wxVERTICAL);
+    col6->Add(label10, 1, wxALIGN_CENTER | wxALL, 5);
+    row2->Add(col6, 0, wxALIGN_CENTER | wxALL, 10);
+    
+    mainSizer->Add(row2, 0, wxALIGN_CENTER);
+
+    SetSizer(mainSizer);
+    Layout();
 }
 
 void MyFrame::StartAudio()
@@ -181,7 +186,7 @@ void MyFrame::RecordAudioSample(wxCommandEvent &event)
             break;
         case 6: // lfo depth
         {
-            float modAmp = value/4.0;
+            float modAmp = (value/4.0) - 0.25f;
             manager.setMod(modAmp);
             //label10->SetLabel(std::to_string(modAmp));
             WriteToLabel("lfodepth:" + std::to_string(modAmp));
@@ -196,7 +201,7 @@ void MyFrame::RecordAudioSample(wxCommandEvent &event)
             break;
         case 8: // grain depth
         {
-            float grainDepth = value/10.0f;
+            float grainDepth = (value/10.0f) - 0.1f;
             manager.setGrainDepth(grainDepth);
             WriteToLabel("graindepth:" + std::to_string(grainDepth));
         }
