@@ -1,5 +1,5 @@
 #include "AudioRecord.h"
-
+#include <cmath>
 namespace AudioInput
 {
     TapeRecorder::TapeRecorder()
@@ -36,58 +36,71 @@ namespace AudioInput
         }
     }
 
-    float TapeRecorder::MonoOut()
-    {
-        if(!isRecording && !isPlaying){
-            return this->input;
-        }
-        if (isRecording)
-        {
-            return 0.0f;
-        }
-        else if (isPlaying && bufferSize > 0)
-        {
-            // 1. Skapa index utifrån nuvarande läsindex
-            int index1 = (int)readIndex;
-            int index2 = index1 + 1;
+    #include <cmath> // Krävs för std::floor
 
-            // 2. Skydda index2 om det hamnar utanför buffern
-            if (index2 >= bufferSize) 
-            {
-                index2 = 0; 
-            }
-
-            // 3. Räkna ut fractional-delen för interpolationen
-            float frac = (float)(readIndex - index1);
-
-            // 4. Hämta samplen och interpolera
-            float sample1 = audioBuffer[index1];
-            float sample2 = audioBuffer[index2];
-            float outputSample = sample1 + frac * (sample2 - sample1);
-
-            // 5. Flytta läsindexet framåt baserat på hastighet
-            readIndex += playbackSpeed;
-
-            // 6. RÄTT: Loopa om hela readIndex om vi har passerat slutet
-            if (readIndex >= bufferSize)
-            {
-                // Vi drar av bufferSize istället för att sätta till 0.0,
-                // då behåller vi sub-sampel-precisionen för nästa varv!
-                readIndex -= bufferSize; 
-            }
-            if(readIndex >= loopEnd)
-            {
-                readIndex -= loopEnd;
-            }
-
-            return outputSample;
-        }
-        return 0.0f; 
+float TapeRecorder::MonoOut()
+{
+    if(!isRecording && !isPlaying){
+        return this->input;
     }
+    if (isRecording)
+    {
+        return 0.0f;
+    }
+    else if (isPlaying && bufferSize > 0)
+    {
+        // 1. Flytta läsindexet först (eller behåll nuvarande och flytta sist, 
+        // men gränskontrollen MÅSTE göras innan vi beräknar index1 och index2)
+        readIndex += playbackSpeed;
+
+        // 2. Hantera loop-gränser direkt (både framlänges och baklänges)
+        if (readIndex >= loopEnd)
+        {
+            readIndex -= loopEnd;
+        }
+        if (readIndex < 0.0)
+        {
+            readIndex += loopEnd;
+        }
+
+        // Extra säkerhetsbälte om loopEnd av någon anledning är större än bufferSize
+        if (readIndex >= bufferSize) readIndex = 0.0;
+        if (readIndex < 0.0) readIndex = 0.0;
+
+        // 3. Skapa index med std::floor för att hantera negativa flyttal korrekt
+        int index1 = (int)std::floor(readIndex);
+        int index2 = index1 + 1;
+
+        // 4. Skydda indexen så de håller sig inom [0, bufferSize - 1]
+        if (index1 >= bufferSize) index1 = 0; // fallback
+        if (index1 < 0)           index1 = bufferSize - 1; 
+        
+        if (index2 >= bufferSize) 
+        {
+            index2 = 0; 
+        }
+        if (index2 < 0)
+        {
+            index2 = bufferSize - 1;
+        }
+
+        // 5. Räkna ut fractional-delen för interpolationen (alltid positiv nu)
+        float frac = (float)(readIndex - std::floor(readIndex));
+
+        // 6. Hämta samplen och interpolera
+        float sample1 = audioBuffer[index1];
+        float sample2 = audioBuffer[index2];
+        float outputSample = sample1 + frac * (sample2 - sample1);
+
+        return outputSample;
+    }
+    return 0.0f; 
+}
+
 
     void TapeRecorder::PitchChange(double speed)
     {
-        if (speed < 0.0) speed = 0.0; // Förhindra negativ hastighet (backa) i denna logik
+        //if (speed < 0.0) speed = 0.0; // Förhindra negativ hastighet (backa) i denna logik
         playbackSpeed = speed;
     }
 
