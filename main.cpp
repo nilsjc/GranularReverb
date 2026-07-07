@@ -138,7 +138,7 @@ void MyFrame::PlayStopSampleLoop(wxCommandEvent &event)
 
 void MyFrame::RecordAudioSample(wxCommandEvent &event)
 {
-    manager.RecordInputSample(loopSize);
+    manager.RecordInputSample(44100 * 4, loopSize);
 }
 
     void MyFrame::OnSlChanged(wxCommandEvent &event)
@@ -224,7 +224,7 @@ void MyFrame::RecordAudioSample(wxCommandEvent &event)
             break;
         case 11: // playback speed
         {
-            double speed = value/100.0;
+            double speed = (value/25.0) - 2.0;
             manager.SetSamplePitchChange(speed);
             WriteToLabel("pitch change:" + std::to_string(speed));
         }
@@ -233,8 +233,16 @@ void MyFrame::RecordAudioSample(wxCommandEvent &event)
         {
 
             loopSize = (int)((value / 25.0) * 44100);
+            if(manager.IsPlayingSample())
+            {
+                // change loop size while playing
+                manager.ChangeLoopLength(loopSize);
+            }
+
             float seconds = loopSize / 44100.0f;
             WriteToLabel("loop size:" + std::to_string(seconds) + "s");
+            
+
         }
             break;
 

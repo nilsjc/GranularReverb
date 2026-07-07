@@ -95,9 +95,9 @@ void SynthManager::Manager::SetSamplePitchChange(double speed)
     recorder.PitchChange(speed);
 }
 
-void SynthManager::Manager::RecordInputSample(int targetSize)
+void SynthManager::Manager::RecordInputSample(int totalSize, int targetSize)
 {
-    recorder.Rec(targetSize);
+    recorder.Rec(totalSize, targetSize);
 }
 
 void SynthManager::Manager::PlaySample()
@@ -108,4 +108,9 @@ void SynthManager::Manager::PlaySample()
 void SynthManager::Manager::StopSample()
 {
     recorder.Stop();
+}
+
+void SynthManager::Manager::ChangeLoopLength(int end)
+{
+    recorder.ChangeLoopLength(end);
 }

@@ -25,9 +25,11 @@ namespace SynthManager
             void setMix(float m);
             void Init();
             void SetSamplePitchChange(double speed);
-            void RecordInputSample(int targetSize);
+            void RecordInputSample(int totalSize, int targetSize);
             void PlaySample();
             void StopSample();
+            bool IsPlayingSample() const { return recorder.Playing(); }
+            void ChangeLoopLength(int end);
 
         private:
             // PlateR::Reverb reverb;

@@ -28,7 +28,7 @@ namespace AudioInput
                 bufferPos++;
             }
 
-            if (bufferPos >= bufferSize)
+            if (bufferPos >= recEnd)
             {
                 isRecording = false; // Stoppa när buffern är full
                 bufferPos = 0; 
@@ -75,6 +75,10 @@ namespace AudioInput
                 // då behåller vi sub-sampel-precisionen för nästa varv!
                 readIndex -= bufferSize; 
             }
+            if(readIndex >= loopEnd)
+            {
+                readIndex -= loopEnd;
+            }
 
             return outputSample;
         }
@@ -85,6 +89,14 @@ namespace AudioInput
     {
         if (speed < 0.0) speed = 0.0; // Förhindra negativ hastighet (backa) i denna logik
         playbackSpeed = speed;
+    }
+
+    void TapeRecorder::ChangeLoopLength(int newLength)
+    {
+        if(newLength < readIndex) {
+            readIndex = 0.0; // Om den nya längden är kortare än nuvarande läsindex, återställ till början
+        }
+        loopEnd = std::max(1, newLength); // Förhindra noll eller negativ längd
     }
 
     void TapeRecorder::Play()
@@ -100,11 +112,13 @@ namespace AudioInput
         isRecording = false;
     }
 
-    void TapeRecorder::Rec(int targetBufferSize)
+    void TapeRecorder::Rec(int targetBufferSize, int endOfRecord)
     {
-        // resize() görs här. Se till att anropa Rec() från ditt UI / huvudtråd, 
+        // resize() görs här. Se till att anropa Rec() från UI / huvudtråd, 
         // och INTE inuti själva ljud-callbacken, för att undvika ljudklick.
+        recEnd = endOfRecord;
         audioBuffer.resize(targetBufferSize);
+        audioBuffer.assign(audioBuffer.size(), 0.0f);
         this->bufferSize = targetBufferSize;
         bufferPos = 0;
         isPlaying = false;

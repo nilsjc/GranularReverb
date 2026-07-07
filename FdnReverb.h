@@ -1,7 +1,7 @@
 #ifndef FDNREVERB_H
 #define FDNREVERB_H
 //
-//  FdnReverb - Erbe-Verb-inspired 4-line Feedback Delay Network reverb.
+//  FdnReverb - 4-line Feedback Delay Network reverb.
 //
 //  Design notes (read me):
 //  - ONE class, C style. All state is plain members / arrays, no virtual calls,
@@ -17,7 +17,7 @@
 //         - sine LFO      : smooth periodic deviation (chorus / Doppler).
 //         - Hann grains   : 4 overlapping raised-cosine grains per line, each
 //                           jumping to a random delay -> breaks up resonance
-//                           with NO chorus/Doppler (the Erbe-Verb "random" mod).
+//                           with NO chorus/Doppler (the "Erbe-Verb random" mod).
 //      All three are read back through cubic Hermite interpolation so fractional
 //      / moving delay lengths stay clean.
 //
